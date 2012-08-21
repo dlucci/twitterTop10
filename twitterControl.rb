@@ -1,4 +1,4 @@
-require 'rubygems'
+require 'rubygems' 
 require 'sinatra'
 require 'net/http'
 require 'json'
@@ -10,9 +10,8 @@ def getTweets(handle)
  tweets = ''
  text = ''
  textData = ''
- if handle.nil?
-   'Please put in a twitter handle.  EX:  ruby square.rb twitterapi'
-   exit
+ if handle == ''
+   return -1
  end    
  begin
    x = 0
@@ -31,8 +30,7 @@ def getTweets(handle)
    end
    textData = textData.split(' ')
    rescue
-      'The twitter handle does not exist / there is no data to display'
-     exit
+     return -2
    end
   return textData
 end
@@ -65,10 +63,27 @@ get '/' do
   erb :tweet
 end
 
+get '/dataError' do
+  erb :dataError
+end
+
+get '/handleError' do
+  erb :handleError
+end
 post '/form' do
   tweets = getTweets(params[:handle])
+  if tweets == -1
+    redirect '/handleError'
+  end
+  if tweets == -2
+    redirect '/dataError'
+  end
   wordHash = wordFreq(tweets)
   #return printFreqWords(wordHash)
   output = printFreqWords(wordHash)
   return output
 end
+
+=begin error 400..510 do
+  erb :error
+=end
